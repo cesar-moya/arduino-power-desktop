@@ -1,3 +1,23 @@
+/*
+  -----------------------
+   Arduino Power Desktop
+  -----------------------
+  Summary: Controls the direction and speed of the motor.
+  
+  Description: The code waits for a button to be pressed (UP or DOWN), 
+  and accordingly powers the motor in the appropriate direction and with the appropriate speed.
+  On my particular setup (a heavy desktop with 3 monitors), when going UP I need 100% of the power, speed and torque,
+  however, when going down I need a bit less since gravity helps, to keep the speed up and down at a similar rate.
+  You may want to tweak the variables PWM_SPEED_UP and PWM_SPEED_DOWN to adjust it to your desktop load, the allowed values
+  are 0 to 255. 255 being Maximum Speed and 0 being OFF.
+
+  You may use this code and all of the diagrams and documentations completely free. Enjoy!
+  
+  Author: Cesar Moya
+  Date:   July 8th, 2020
+  URL:    https://github.com/cesar-moya/arduino-power-desktop
+*/
+
 #define enB 9
 #define in3 6
 #define in4 7
@@ -10,9 +30,8 @@ int btnUpPressed = 0;
 boolean goingDown = false;
 boolean goingUp = false;
 
-//About Max Speed: 40(12v,0.1mA) | 127(24.7v,0.25mA) | 185(26v,0.27mA) | 115 = 24.1v
-const int PWM_SPEED_UP = 255; //0 - 255, controls motor speed
-const int PWM_SPEED_DOWN = 200; //0 - 255, controls motor speed
+const int PWM_SPEED_UP = 255; //0 - 255, controls motor speed when going UP
+const int PWM_SPEED_DOWN = 200; //0 - 255, controls motor speed when going DOWN
 const int PWM_ZERO = 0;
 
 void setup() {
