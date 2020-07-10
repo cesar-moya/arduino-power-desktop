@@ -18,17 +18,22 @@
   URL:    https://github.com/cesar-moya/arduino-power-desktop
 */
 
-#define enB 9
+#define enA 11
+#define in1 12
+#define in2 13
+
+#define enB 5
 #define in3 6
 #define in4 7
-#define BUTTON_DOWN 3
-#define BUTTON_UP 4
+
+#define BUTTON_DOWN 2
+#define BUTTON_UP 3
 
 int btnDownPressed = 0;
 int btnUpPressed = 0;
 
-boolean goingDown = false;
-boolean goingUp = false;
+bool goingDown = false;
+bool goingUp = false;
 
 const int PWM_SPEED_UP = 255; //0 - 255, controls motor speed when going UP
 const int PWM_SPEED_DOWN = 200; //0 - 255, controls motor speed when going DOWN
@@ -69,27 +74,44 @@ void loop() {
   }
 }
 
+//Send PWM signal to L298N enX pin (sets motor speed)
 void goDown(){
   Serial.println("DOWN");
   goingDown = true;
   digitalWrite(LED_BUILTIN, HIGH);
-  analogWrite(enB, PWM_SPEED_DOWN); //Send PWM signal to L298N enB pin (sets motor speed)
+  
+  //Motor A: Turns in (LH) direction
+  analogWrite(enA, PWM_SPEED_DOWN); 
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, HIGH);
+  
+  //Motor B: Turns in OPPOSITE (HL) direction
+  analogWrite(enB, PWM_SPEED_DOWN); 
   digitalWrite(in3, HIGH);
   digitalWrite(in4, LOW);
 }
 
+//Send PWM signal to L298N enX pin (sets motor speed)
 void goUp(){
   Serial.println("UP");
   goingUp = true;
-  analogWrite(enB, PWM_SPEED_UP); //Send PWM signal to L298N enB pin (sets motor speed)
+  digitalWrite(LED_BUILTIN, HIGH);
+  
+  //Motor A: Turns in (HL) Direction
+  analogWrite(enA, PWM_SPEED_UP); 
+  digitalWrite(in1, HIGH);
+  digitalWrite(in2, LOW);
+  
+  //Motor B: Turns in OPPOSITE (LH) direction
+  analogWrite(enB, PWM_SPEED_UP); 
   digitalWrite(in3, LOW);
   digitalWrite(in4, HIGH);
-  digitalWrite(LED_BUILTIN, HIGH);
 }
 
 void stopMoving(){
   goingDown = false;
   goingUp = false;
+  analogWrite(enA, PWM_ZERO);
   analogWrite(enB, PWM_ZERO);
   digitalWrite(LED_BUILTIN, LOW);
 }
