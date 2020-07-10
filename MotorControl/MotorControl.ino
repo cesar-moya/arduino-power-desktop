@@ -74,16 +74,16 @@ void goDown(){
   goingDown = true;
   digitalWrite(LED_BUILTIN, HIGH);
   analogWrite(enB, PWM_SPEED_DOWN); //Send PWM signal to L298N enB pin (sets motor speed)
-  digitalWrite(in3, LOW);
-  digitalWrite(in4, HIGH);
+  digitalWrite(in3, HIGH);
+  digitalWrite(in4, LOW);
 }
 
 void goUp(){
   Serial.println("UP");
   goingUp = true;
   analogWrite(enB, PWM_SPEED_UP); //Send PWM signal to L298N enB pin (sets motor speed)
-  digitalWrite(in3, HIGH);
-  digitalWrite(in4, LOW);
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, HIGH);
   digitalWrite(LED_BUILTIN, HIGH);
 }
 
