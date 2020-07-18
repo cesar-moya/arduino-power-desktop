@@ -35,6 +35,8 @@ int btnUpPressed = 0;
 bool goingDown = false;
 bool goingUp = false;
 
+//Using custom values to ensure no more than 24v are delivered to the motors given my desk load.
+//feel free to play with these numbers but make sure to stay within your motor's rated voltage.
 const int PWM_SPEED_UP = 245; //0 - 255, controls motor speed when going UP
 const int PWM_SPEED_DOWN = 220; //0 - 255, controls motor speed when going DOWN
 const int PWM_ZERO = 0;
