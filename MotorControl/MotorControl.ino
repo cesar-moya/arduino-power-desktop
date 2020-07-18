@@ -75,37 +75,37 @@ void loop() {
 }
 
 //Send PWM signal to L298N enX pin (sets motor speed)
-void goDown(){
-  Serial.println("DOWN");
-  goingDown = true;
-  digitalWrite(LED_BUILTIN, HIGH);
-  
-  //Motor A: Turns in (LH) direction
-  analogWrite(enA, PWM_SPEED_DOWN); 
-  digitalWrite(in1, LOW);
-  digitalWrite(in2, HIGH);
-  
-  //Motor B: Turns in OPPOSITE (HL) direction
-  analogWrite(enB, PWM_SPEED_DOWN); 
-  digitalWrite(in3, HIGH);
-  digitalWrite(in4, LOW);
-}
-
-//Send PWM signal to L298N enX pin (sets motor speed)
 void goUp(){
   Serial.println("UP");
   goingUp = true;
   digitalWrite(LED_BUILTIN, HIGH);
   
-  //Motor A: Turns in (HL) Direction
+  //Motor A: Turns in (LH) direction
   analogWrite(enA, PWM_SPEED_UP); 
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, HIGH);
+  
+  //Motor B: Turns in OPPOSITE (HL) direction
+  analogWrite(enB, PWM_SPEED_UP); 
+  digitalWrite(in4, HIGH);
+  digitalWrite(in3, LOW);
+}
+
+//Send PWM signal to L298N enX pin (sets motor speed)
+void goDown(){
+  Serial.println("DOWN");
+  goingDown = true;
+  digitalWrite(LED_BUILTIN, HIGH);
+  
+  //Motor A: Turns in (HL) Direction
+  analogWrite(enA, PWM_SPEED_DOWN); 
   digitalWrite(in1, HIGH);
   digitalWrite(in2, LOW);
   
   //Motor B: Turns in OPPOSITE (LH) direction
-  analogWrite(enB, PWM_SPEED_UP); 
-  digitalWrite(in3, LOW);
-  digitalWrite(in4, HIGH);
+  analogWrite(enB, PWM_SPEED_DOWN); 
+  digitalWrite(in4, LOW);
+  digitalWrite(in3, HIGH);
 }
 
 void stopMoving(){
