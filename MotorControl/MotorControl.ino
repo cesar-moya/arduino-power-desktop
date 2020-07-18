@@ -18,9 +18,9 @@
   URL:    https://github.com/cesar-moya/arduino-power-desktop
 */
 
-#define enA 11
-#define in1 12
-#define in2 13
+#define enA 10
+#define in1 11
+#define in2 12
 
 #define enB 5
 #define in3 6
