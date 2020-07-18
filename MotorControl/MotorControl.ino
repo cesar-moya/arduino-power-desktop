@@ -35,8 +35,8 @@ int btnUpPressed = 0;
 bool goingDown = false;
 bool goingUp = false;
 
-const int PWM_SPEED_UP = 255; //0 - 255, controls motor speed when going UP
-const int PWM_SPEED_DOWN = 200; //0 - 255, controls motor speed when going DOWN
+const int PWM_SPEED_UP = 245; //0 - 255, controls motor speed when going UP
+const int PWM_SPEED_DOWN = 220; //0 - 255, controls motor speed when going DOWN
 const int PWM_ZERO = 0;
 
 void setup() {
