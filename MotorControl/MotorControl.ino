@@ -270,21 +270,28 @@ void autoRaiseDesk()
   Serial.println(savedProgram.isDeskRaised);
   if (savedProgram.isUpSet && !savedProgram.isDeskRaised)
   {
+    //Get a backup copy of the program (in case power goes out mid-raise)
+    StoredProgram prog = getEEPROMCopy();
+    //We invalidate the program until we're certain the desk was fully lowered, then we re-save it
+    invalidateEEPROM();
+    bool isCancelled = false;
     long startTime = millis();
-    while((millis() - startTime) < savedProgram.timeUp){
+    while((millis() - startTime) < prog.timeUp){
+      goUp();
       //if any button is pressed during program play, cancel and invalidate
       if (debounceRead(BUTTON_UP, LOW) || debounceRead(BUTTON_DOWN, LOW) || 
           debounceRead(BUTTON_UP_PRG, LOW) || debounceRead(BUTTON_DOWN_PRG, LOW))
       {
+        isCancelled = true;
         stopMoving();
-        invalidateEEPROM();
         break;
-      }else{
-        goUp();
       }
     }
     stopMoving();
-    saveToEEPROM_DeskRaised();
+    //Only recuperate the values if the program wasn't cancelled
+    if(!isCancelled){
+      saveToEEPROM_DeskRaised(prog);
+    }
   }
   else
   {
@@ -304,21 +311,27 @@ void autoLowerDesk()
   Serial.println(savedProgram.isDeskRaised);
   if (savedProgram.isDownSet && savedProgram.isDeskRaised)
   {
+    //Get a backup copy of the program (in case power goes out mid-raise)
+    StoredProgram prog = getEEPROMCopy();
+    //We invalidate the program until we're certain the desk was fully lowered, then we re-save it
+    invalidateEEPROM();
+    bool isCancelled = false;
     long startTime = millis();
-    while((millis() - startTime) < savedProgram.timeDown){
+    while((millis() - startTime) < prog.timeDown){
+      goDown();
       //if any button is pressed during program play, cancel and invalidate
       if (debounceRead(BUTTON_UP, LOW) || debounceRead(BUTTON_DOWN, LOW) || 
           debounceRead(BUTTON_UP_PRG, LOW) || debounceRead(BUTTON_DOWN_PRG, LOW))
       {
+        isCancelled = true;
         stopMoving();
-        invalidateEEPROM();
         break;
-      }else{
-        goDown();
       }
     }
     stopMoving();
-    saveToEEPROM_DeskLowered();
+    if(!isCancelled){
+      saveToEEPROM_DeskLowered(prog);  
+    }
   }
   else
   {
@@ -400,18 +413,36 @@ void saveToEEPROM_TimeDown(long timeDown)
   successBlink();
 }
 
-void saveToEEPROM_DeskRaised()
+void saveToEEPROM_DeskRaised(StoredProgram prog)
 {
   Serial.println("Saving Desk is Raised to EEPROM");
+  savedProgram.timeUp = prog.timeUp;
+  savedProgram.isUpSet = prog.isUpSet;
+  savedProgram.timeDown = prog.timeDown;
+  savedProgram.isDownSet = prog.isDownSet;
   savedProgram.isDeskRaised = true;
   EEPROM.put(EEPROM_ADDRESS, savedProgram);
 }
 
-void saveToEEPROM_DeskLowered()
+void saveToEEPROM_DeskLowered(StoredProgram prog)
 {
   Serial.println("Saving Desk is Lowered to EEPROM");
+  savedProgram.timeUp = prog.timeUp;
+  savedProgram.isUpSet = prog.isUpSet;
+  savedProgram.timeDown = prog.timeDown;
+  savedProgram.isDownSet = prog.isDownSet;
   savedProgram.isDeskRaised = false;
   EEPROM.put(EEPROM_ADDRESS, savedProgram);
+}
+
+StoredProgram getEEPROMCopy(){
+  StoredProgram prog;
+  prog.timeUp = savedProgram.timeUp;
+  prog.isUpSet = savedProgram.isUpSet;
+  prog.timeDown = savedProgram.timeDown;
+  prog.isDownSet = savedProgram.isDownSet;
+  prog.isDeskRaised = savedProgram.isDeskRaised;
+  return prog;
 }
 
 // Since this circuit doesn't have a way to detect if a motor has stalled then the recorded program 
