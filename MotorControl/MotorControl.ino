@@ -143,7 +143,7 @@ void handleButtonProgramUpHold()
     delay(10);
     count++;
     //If button was held for more than 1 second, enter program mode
-    if (count >= 100)
+    if (count >= 70)
     {
       Serial.println("BUTTON UP | PROGRAM | Entered program mode");
       bool saveAndExit = false;
@@ -215,7 +215,7 @@ void handleButtonProgramDownHold(){
     delay(10);
     count++;
     //If button was held for more than 1 second, enter program mode
-    if (count >= 100)
+    if (count >= 70)
     {
       Serial.println("BUTTON DOWN | PROGRAM | Entered program mode");
       bool saveAndExit = false;
@@ -486,7 +486,7 @@ void readFromEEPROM()
 void successBlink()
 {
   digitalWrite(LED_SYS, LOW);
-  for (int i = 0; i < 3; i++)
+  for (int i = 0; i < 2; i++)
   {
     digitalWrite(LED_SYS, HIGH);
     delay(500);
@@ -514,7 +514,7 @@ void warningBlink()
 void thinkingBlink()
 {
   digitalWrite(LED_SYS, LOW);
-  for (int i = 0; i < 30; i++)
+  for (int i = 0; i < 20; i++)
   {
     digitalWrite(LED_SYS, HIGH);
     delay(30);
