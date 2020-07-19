@@ -272,7 +272,16 @@ void autoRaiseDesk()
   {
     long startTime = millis();
     while((millis() - startTime) < savedProgram.timeUp){
-      goUp();
+      //if any button is pressed during program play, cancel and invalidate
+      if (debounceRead(BUTTON_UP, LOW) || debounceRead(BUTTON_DOWN, LOW) || 
+          debounceRead(BUTTON_UP_PRG, LOW) || debounceRead(BUTTON_DOWN_PRG, LOW))
+      {
+        stopMoving();
+        invalidateEEPROM();
+        break;
+      }else{
+        goUp();
+      }
     }
     stopMoving();
     saveToEEPROM_DeskRaised();
@@ -297,7 +306,16 @@ void autoLowerDesk()
   {
     long startTime = millis();
     while((millis() - startTime) < savedProgram.timeDown){
-      goDown();
+      //if any button is pressed during program play, cancel and invalidate
+      if (debounceRead(BUTTON_UP, LOW) || debounceRead(BUTTON_DOWN, LOW) || 
+          debounceRead(BUTTON_UP_PRG, LOW) || debounceRead(BUTTON_DOWN_PRG, LOW))
+      {
+        stopMoving();
+        invalidateEEPROM();
+        break;
+      }else{
+        goDown();
+      }
     }
     stopMoving();
     saveToEEPROM_DeskLowered();
@@ -437,7 +455,7 @@ void readFromEEPROM()
 void successBlink()
 {
   digitalWrite(LED_SYS, LOW);
-  for (int i = 0; i < 4; i++)
+  for (int i = 0; i < 3; i++)
   {
     digitalWrite(LED_SYS, HIGH);
     delay(500);
