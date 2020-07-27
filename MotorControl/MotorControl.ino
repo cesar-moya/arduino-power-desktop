@@ -143,6 +143,7 @@ void loop() {
   
 }
 
+//Checks if the user is requesting to enter program mode (by pressing and holding both buttons), if so, returns true, otherwise, false
 bool isHandlingProgramMode(){
   if (debounceRead(BUTTON_DOWN, LOW) && debounceRead(BUTTON_UP, LOW))
   {
@@ -160,6 +161,7 @@ bool isHandlingProgramMode(){
       bool recUp = false;
       bool recDown = false;
       bool btnUpPressed = digitalRead(BUTTON_UP);
+      bool btnDownPressed = digitalRead(BUTTON_DOWN);
 
       while (true)
       {
@@ -167,33 +169,69 @@ bool isHandlingProgramMode(){
         if (!recUp && !recDown)
           programModeBlink(elapsed, lastBlink);
 
-        //when entering this loop. button up WAS already pressed, we need to wait until it's released, then start recording
+        //HANDLE PROGRAM UP
+        //when entering this loop. button UP WAS already pressed, we need to wait until it's released, then start recording
         //if button wasn't pressed and now IS pressed, start recording
-        if (!btnUpPressed && debounceRead(BUTTON_UP, btnUpPressed))
-        {
-          btnUpPressed = true;
-          recUp = true;
-          recStart = millis();
-        } //if button was pressed and now is released
-        else if (btnUpPressed && !debounceRead(BUTTON_UP, btnUpPressed))
-        {
-          btnUpPressed = false;
+        if(!recDown){
+          if (!btnUpPressed && debounceRead(BUTTON_UP, btnUpPressed))
+          {
+            btnUpPressed = true;
+            recUp = true;
+            recStart = millis();
+          } //if button was pressed and now is released
+          else if (btnUpPressed && !debounceRead(BUTTON_UP, btnUpPressed))
+          {
+            btnUpPressed = false;
+            if (recUp)
+            {
+              recUp = false;
+              long timeUp = millis() - recStart;
+              saveToEEPROM_TimeUp(timeUp);
+              Serial.print("Recorded Program UP: ");
+              Serial.println(timeUp);
+              break;
+            }
+          }
+
           if (recUp)
           {
-            recUp = false;
-            long timeUp = millis() - recStart;
-            saveToEEPROM_TimeUp(timeUp);
-            Serial.print("Recorded Program UP: ");
-            Serial.println(timeUp);
-            break;
+            Serial.print("PROGRAM MODE | Recording | elapsed: ");
+            Serial.println(millis() - recStart);
+            goUp();
           }
         }
+        
 
-        if (recUp)
-        {
-          Serial.print("PROGRAM MODE | Recording | elapsed: ");
-          Serial.println(millis() - recStart);
-          goUp();
+        //HANDLE PROGRAM DOWN
+        //when entering this loop. button DOWN WAS already pressed, we need to wait until it's released, then start recording
+        //if button wasn't pressed and now IS pressed, start recording
+        if(!recUp){
+          if (!btnDownPressed && debounceRead(BUTTON_DOWN, btnDownPressed))
+          {
+            btnDownPressed = true;
+            recDown = true;
+            recStart = millis();
+          } //if button was pressed and now is released
+          else if (btnDownPressed && !debounceRead(BUTTON_DOWN, btnDownPressed))
+          {
+            btnDownPressed = false;
+            if (recDown)
+            {
+              recDown = false;
+              long timeDown = millis() - recStart;
+              saveToEEPROM_TimeDown(timeDown);
+              Serial.print("Recorded Program DOWN: ");
+              Serial.println(timeDown);
+              break;
+            }
+          }
+
+          if (recDown)
+          {
+            Serial.print("PROGRAM MODE | Recording Down| elapsed: ");
+            Serial.println(millis() - recStart);
+            goDown();
+          }
         }
 
       } //end of while / program mode
@@ -251,15 +289,18 @@ void autoRaiseDesk(long alreadyElapsed)
   if (savedProgram.isUpSet)
   {
     //we subtract the amount of ms that already elapsed to enter auto-mode (about 2 seconds in default configs)
-    long timeToRaise = savedProgram.timeUp - alreadyElapsed; 
+    long timeToRaise = savedProgram.timeUp - alreadyElapsed;
+    Serial.print("AUTORAISE | timeToRaise: "); Serial.println(timeToRaise);
     long startTime = millis();
     while((millis() - startTime) < timeToRaise){
       goUp();
+      //TODO: re-implement this cancel, but first check that the user released, then clicked again
       //if any button is pressed during program play, cancel and invalidate
-      if (debounceRead(BUTTON_UP, LOW) || debounceRead(BUTTON_DOWN, LOW))
-      {
-        break;
-      }
+//      if (debounceRead(BUTTON_UP, LOW) || debounceRead(BUTTON_DOWN, LOW))
+//      {
+//        Serial.println("Program Cancelled by user");
+//        break;
+//      }
     }
     stopMoving();
   }
