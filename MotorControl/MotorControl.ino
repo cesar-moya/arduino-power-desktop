@@ -346,6 +346,7 @@ bool handleProgramMode(){
             if (recUp)
             {
               recUp = false;
+              stopMoving();
               long timeUp = millis() - recStart;
               saveToEEPROM_TimeUp(timeUp);
               Serial.print("Recorded Program UP: ");
@@ -378,6 +379,7 @@ bool handleProgramMode(){
             if (recDown)
             {
               recDown = false;
+              stopMoving();
               long timeDown = millis() - recStart;
               saveToEEPROM_TimeDown(timeDown);
               Serial.print("Recorded Program DOWN: ");
