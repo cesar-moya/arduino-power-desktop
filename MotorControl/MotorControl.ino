@@ -2,19 +2,65 @@
   ----------------------------
    Arduino Power Desktop PLUS
   ----------------------------
-  Summary: Controls the direction and speed of the motor, supports programmable height
+  SUMMARY 
+    Controls the direction and speed of the motor, supports auto-raising and auto-lowering by pre-recording their elapsed times
   
-  Description: The code waits for a button to be pressed (UP or DOWN), 
-  and accordingly powers the motor in the appropriate direction and with the appropriate speed.
-  On my particular setup (a heavy desktop with 3 monitors), when going UP I need 100% of the power, speed and torque,
-  however, when going down I need a bit less since gravity helps, to keep the speed up and down at a similar rate.
-  You may want to tweak the variables PWM_SPEED_UP and PWM_SPEED_DOWN to adjust it to your desktop load, the allowed values
-  are 0 to 255. 255 being Maximum Speed and 0 being OFF.
+  DESCRIPTION 
+    This code waits for a button to be pressed (UP or DOWN), and accordingly powers the motors in the desired direction and speed.
+    One motor will turn clockwise, the other counterclockwise. The motors are inteded to be placed facing each other, to duplicate the torque on the allen wrench
+    On my particular setup (a heavy desktop with 2 monitors) I use 100% of the power speed and torque when raising the desk,
+    however, when lowering the desk I need a bit less since gravity helps, to keep the speed up and down at a similar rate, this is configurable.
+    You may want to tweak the variables PWM_SPEED_UP and PWM_SPEED_DOWN to adjust it to your desktop load, the allowed values
+    are 0 (min) to 255 (max).
 
+  BASIC USAGE
+    - Press and hold BUTTON_UP to raise the desk. a small delay of 500ms has been introduced for smoothness
+    - Press and hold BUTTON_DOWN to lower the desk. a small delay of 500ms has been introduced for smoothness
+  
+  PROGRAM MODE (Recording time to raise/lower) - [optional]
+    Use program mode to record the time it takes your motors to raise and lower the desk. once recorded, you can use the auto-raise and auto-lower functions,
+    this is an optional functionality, it's ok if you decide simply not to use it
+    - To enter Program Mode, press and hold BUTTON_UP and BUTTON_DOWN for 3 seconds
+    - The LED on pin 9 will continously blink rapidly, indicating that the system is in program mode waiting for the user to start recording (raise or lower)
+    - While in program mode, Press and Hold BUTTON_UP to raise the desk and RECORD the time it takes to raise it, this value will be used on auto-raise later
+    - While in program mode, Press and Hold BUTTON_DOWN to lower the desk and RECORD the time it takes to lower it, this value will be used on auto-lower later
+    - After the button is released, the LED will perform a "BLINK_THINKING" followed by a "BLINK_SUCCESS" (see below) to indicate the program was recorded to EEPROM correctly,
+      otherwise, a BLINK_ERROR will be performed
+
+  AUTO RAISING THE DESK [optional]
+    - IMPORTANT: This is a very cool but kind of risky feature, it's completely optional, don't use it if you don't fully understand the risks. Here is why: If you 
+      activate auto-raise, and your desk was already at the maximum height, then - depending on your desk - on the IKEA SKARSTA it will hit a stopping point and the MOTORS WILL
+      STALL for the amount of seconds that you recorded. In other words, if you recorded 30 seconds to raise, and your desk is already at the top position (or close), and 
+      you still enable auto-raise, you risk damaging your motors as a full power will be sent to them but they will be blocked. When using auto-raise and auto-lower you must
+      ALWAYS be present and watching the desk, ready to cancel the operation if the motors stall for any reason. To cancel, simply press any button, or turn the circuit off.
+      I have built-in a somewhat-safety option feature (see below), but there is still a small risk. Needless to say, use at your own risk, I do not assume any responsibility if
+      your motors or anything else breaks because of misuse or any other reason.
+    - In order to automatically raise the desk, you must first record the time it takes to raise it (see PROGRAM MODE above), if you try to input the auto-raise sequence
+      without the time to raise programmed it will simply stop raising and perform a BLINK_ERROR routine. Completely unharmful, you can continue to use the manual up/down buttons
+    - To activate auto-raise (using BUTTON_UP only)
+      - Press the button Twice in less than a second then immediately Press & Hold for 2 seconds (i.e. Press, Press, Press+Hold)
+      - If the sequence was done correctly, the LED will blink continously (AFTER the 2 seconds of holding) and you can then release the button, 
+        it will continue raising the desk automatically and then stop when the recorded time has elapsed. The 2 seconds that it takes to activate program mode are substracted from
+        the recorded time to keep the total raise time correct (approximately, of course).
+      - Please note, the moment you hold the button (after the 2 presses) the desk will begin to raise, you must keep holding it while it raises for 2 seconds for the program
+        to kick in. This was done on purpose as a safety measure so that if your desk was already at maximum height, you will immediately notice that the motor stalled and you 
+        should release the button immediately. 
+      - To cancel auto-raise at any time, simply press any button. But be CAREFUL if you want to activate it again, as the program simply re-plays the recorded values, and will not 
+        know that you are already at a higher position. see IMPORTANT note above for details.
+
+  AUTO LOWERING THE DESK [optional]
+    - Follow the same exact steps as with AUTO RAISING, but using BUTTON_DOWN
+
+  LED BLINK FEEDBACK
+    - The circuit and program includes a LED installed on pin 9 that performs some fun blinking routines to indicate a success / error state:
+    - BLINK_THINKING: Blinks rapidly for about a second
+    - BLINK_SUCCESS: Blinks 2 times slowly, 1 blink per second
+    - BLINK_ERROR: Blinks rapidly, pauses, Blinks rapidly, pauses, Blinks rapidly
+  
   You may use this code and all of the diagrams and documentations completely free. Enjoy!
   
   Author: Cesar Moya
-  Date:   July 8th, 2020
+  Date:   July 28th, 2020
   URL:    https://github.com/cesar-moya/arduino-power-desktop
 */
 #include <EEPROM.h>
@@ -45,11 +91,16 @@ bool BUTTON_DOWN_STATE = LOW;
 long BUTTON_WAIT_TIME = 500; //the small delay before starting to go up/down for smoothness on any button
 
 //Program Mode SET/ACTIVATE variables
+//The following three properties can be understood as follows: a user needs to do [PRG_ACTIVATE_PRECLICKS] clicks in less than [PRG_ACTIVATE_PRECLICK_THRESHOLD] ms, and then
+//hold the list click for [PRG_ACTIVATE_HOLD_THRESHOLD] ms, to activate auto-raise / auto-lower mode
 int  PRG_ACTIVATE_PRECLICKS = 3;//number of clicks before checking for hold to activate auto-raise/lower
-long PRG_ACTIVATE_PRECLICK_THRESHOLD = 1000; //the threshold for the PRG_ACTIVATE_PRECLICKS before PRG_ACTIVATE_HOLD_THRESHOLD kicks in
+long PRG_ACTIVATE_PRECLICK_THRESHOLD = 1000; //the threshold for the PRG_ACTIVATE_PRECLICKS before PRG_ACTIVATE_HOLD_THRESHOLD check kicks in
 long PRG_ACTIVATE_HOLD_THRESHOLD = 2000;  //threshold that needs to elapse holding a button (up OR down) after preclicks has been satisfied to enter auto-raise / auto-lower
-long PRG_SET_THRESHOLD = 2000; //the time to enter program mode
-long holdButtonsStartTime = 0; //the time when the user began pressing and holding both buttons, attempting to enter program mode
+
+//the time to enter program mode, to record a new timeUp/timeDown value
+long PRG_SET_THRESHOLD = 2000;
+//the time when the user began pressing and holding both buttons, attempting to enter program mode
+long holdButtonsStartTime = 0; 
 
 //Button UP variables
 int btnUpClicks = 0;
@@ -87,7 +138,7 @@ void loop() {
   if (handleProgramMode()){  
     return;
   }
-  //Check if the user didn't click at least twice in less than a second, reset counters if necessary
+  //Check if the user didn't click at least twice(default config) in less than a second, reset counters if necessary
   checkButtonClicksExpired();
 
   //Handle press and hold of buttons to raise/lower, and check if enter auto-raise and auto-lower
@@ -98,11 +149,10 @@ void loop() {
 /****************************************
   MAIN CONTROL FUNCTIONS
 ****************************************/
-
 //If you didn't enter auto-raise or auto-lower by doing the magic combination (2 clicks in under a second + click and hold 2 secs)
 //then this function resets the clicks back to zero and the timer. handles both UP and DOWN buttons
 void checkButtonClicksExpired(){
-  //If the threshold for the first 2 clicks expired, reset the clicks back to zero.
+  //Check threshold for button UP
   if (btnUpFirstClickTime > 0 && (millis() - btnUpFirstClickTime) >= PRG_ACTIVATE_PRECLICK_THRESHOLD)
   {
     Serial.println("BUTTON UP | PRECLICK_THRESHOLD expired, clicks = 0");
@@ -110,7 +160,7 @@ void checkButtonClicksExpired(){
     btnUpFirstClickTime = 0;
   }
 
-  //If the threshold for the first 2 clicks expired, reset the clicks back to zero.
+  //Check threshold for button DOWN
   if (btnDownFirstClickTime > 0 && (millis() - btnDownFirstClickTime) >= PRG_ACTIVATE_PRECLICK_THRESHOLD)
   {
     Serial.println("BUTTON DOWN | PRECLICK_THRESHOLD expired, clicks = 0");
@@ -119,6 +169,8 @@ void checkButtonClicksExpired(){
   }
 }
 
+//This function takes care of the events related to pressing BUTTON_UP, and only BUTTON_UP. It raises the desk when holding it, and if you do the 
+//magic combination (click, click, click+hold 2 secs) it will trigger auto-raise if recorded
 void handleButtonUp(){
   //If button has just been pressed, we count the presses, and we also handle if it's kept hold to raise desk / enter program
   if (!BUTTON_UP_STATE && debounceRead(BUTTON_UP, BUTTON_UP_STATE))
@@ -185,6 +237,8 @@ void handleButtonUp(){
   }
 }
 
+//This function takes care of the events related to pressing BUTTON_DOWN, and only BUTTON_DOWN. It lowers the desk when holding it, and if you do the
+//magic combination (click, click, click+hold 2 secs) it will trigger auto-lower if recorded
 void handleButtonDown()
 {
   //If button has just been pressed, we count the presses, and we also handle if it's kept hold to lower desk / enter program
@@ -359,10 +413,9 @@ bool handleProgramMode(){
   LOWER / RAISE DESK FUNCTIONS
 ****************************************/
 // Tries to raise the desk automatically using the previously programmed values
-// Only attempts to raise it if the desk is currently LOWERED and if a program exists
 void autoRaiseDesk(long alreadyElapsed)
 {
-  Serial.print("IsUpSet?");
+  Serial.print("IsUpSet: ");
   Serial.println(savedProgram.isUpSet);
   if (savedProgram.isUpSet)
   {
@@ -379,7 +432,7 @@ void autoRaiseDesk(long alreadyElapsed)
       programBlink(elapsed, 50);
       goUp();
 
-      //if any button is pressed during program play, cancel and invalidate
+      //Cancel if any button is pressed during autoRaise
       if(!btnUpState && debounceRead(BUTTON_UP, btnUpState)){
         Serial.println("Program Cancelled by user, BUTTON UP");
         break;
@@ -411,10 +464,9 @@ void autoRaiseDesk(long alreadyElapsed)
 }
 
 // Tries to lower the desk automatically using the previously programmed values
-// Only attempts to raise it if the desk is currently RAISED and if a program exists
 void autoLowerDesk(long alreadyElapsed)
 {
-  Serial.print("IsDownSet?");
+  Serial.print("IsDownSet: ");
   Serial.println(savedProgram.isDownSet);
   if (savedProgram.isDownSet)
   {
@@ -431,7 +483,7 @@ void autoLowerDesk(long alreadyElapsed)
       programBlink(elapsed, 50);
       goDown();
 
-      //if any button is pressed during program play, cancel and invalidate
+      //Cancel if any button is pressed during auto-lower
       if (!btnUpState && debounceRead(BUTTON_UP, btnUpState)){
         Serial.println("Program Cancelled by user, BUTTON UP");
         break;
@@ -533,24 +585,14 @@ void saveToEEPROM_TimeDown(long timeDown)
   successBlink();
 }
 
-StoredProgram getEEPROMCopy(){ //TODO: Delete
-  StoredProgram prog;
-  prog.timeUp = savedProgram.timeUp;
-  prog.isUpSet = savedProgram.isUpSet;
-  prog.timeDown = savedProgram.timeDown;
-  prog.isDownSet = savedProgram.isDownSet;
-  return prog;
-}
-
 void readFromEEPROM()
 {
-  thinkingBlink(); //TODO: Remove
+  thinkingBlink();
   Serial.println("Reading from EEPROM");
   EEPROM.get(EEPROM_ADDRESS, savedProgram);
   long timeUpInt = (long)savedProgram.timeUp;
   Serial.print("TimeUp: ");
   Serial.print(timeUpInt);
-  
   long timeDownInt = (long)savedProgram.timeDown;
   Serial.print(" | TimeDown: ");
   Serial.print(timeDownInt);
@@ -561,10 +603,15 @@ void readFromEEPROM()
   successBlink();
 }
 
+void clearEEPROM(){
+  for (int i = 0 ; i < EEPROM.length() ; i++) {
+    EEPROM.write(i, 0);
+  }
+}
+
 /****************************************
   BLINK & MISC FUNCTIONS
 ****************************************/
-
 //pass in the elapsed time in ms and the blink frequency, if you don't know then just pass 100 to blinkFreq
 void programBlink(long elapsed, long blinkFreq){
   long blinkNo = elapsed / blinkFreq;
@@ -574,7 +621,7 @@ void programBlink(long elapsed, long blinkFreq){
     digitalWrite(LED_SYS, LOW);
 }
 
-//Need to debounce the initial button reads to prevent flickering
+//This function debounces the initial button reads to prevent flickering
 bool debounceRead(int buttonPin, bool state)
 {
   bool stateNow = digitalRead(buttonPin);
