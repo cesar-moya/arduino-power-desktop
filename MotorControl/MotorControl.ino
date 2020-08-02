@@ -95,7 +95,7 @@ long BUTTON_WAIT_TIME = 500; //the small delay before starting to go up/down for
 //hold the list click for [PRG_ACTIVATE_HOLD_THRESHOLD] ms, to activate auto-raise / auto-lower mode
 int  PRG_ACTIVATE_PRECLICKS = 3;//number of clicks before checking for hold to activate auto-raise/lower
 long PRG_ACTIVATE_PRECLICK_THRESHOLD = 1000; //the threshold for the PRG_ACTIVATE_PRECLICKS before PRG_ACTIVATE_HOLD_THRESHOLD check kicks in
-long PRG_ACTIVATE_HOLD_THRESHOLD = 1500;  //threshold that needs to elapse holding a button (up OR down) after preclicks has been satisfied to enter auto-raise / auto-lower
+long PRG_ACTIVATE_HOLD_THRESHOLD = 2000;  //threshold that needs to elapse holding a button (up OR down) after preclicks has been satisfied to enter auto-raise / auto-lower
 
 //the time to enter program mode, to record a new timeUp/timeDown value
 long PRG_SET_THRESHOLD = 2000;
