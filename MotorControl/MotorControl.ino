@@ -65,15 +65,15 @@
 */
 #include <EEPROM.h>
 
-#define BUTTON_DOWN 2
-#define BUTTON_UP 3
-#define enA 6
-#define in1 7
-#define in2 8
-#define LED_SYS 9
-#define enB 10
-#define in3 11
-#define in4 12
+#define BUTTON_DOWN 2 //ATM-4
+#define BUTTON_UP 3   //ATM-5
+#define enA 6         //ATM-12
+#define in1 7         //ATM-13
+#define in2 8         //ATM-14
+#define LED_SYS 9     //ATM-15
+#define enB 10        //ATM-16
+#define in3 11        //ATM-17
+#define in4 12        //ATM-18
 
 //Struct to store the various necessary variables to persist the autoRaise/autoLower programs to EEPROM
 struct StoredProgram
@@ -130,6 +130,7 @@ void setup() {
   pinMode(in3, OUTPUT);
   pinMode(in4, OUTPUT);
   readFromEEPROM();
+  validateEEPROM();
 }
 
 void loop() {
@@ -603,6 +604,19 @@ void readFromEEPROM()
   Serial.print(" | IsDownSet: ");
   Serial.println(savedProgram.isDownSet);
   successBlink();
+}
+
+void validateEEPROM(){
+  if(isnan(savedProgram.timeUp) || isnan(savedProgram.timeDown)){
+    thinkingBlink();
+    Serial.println("Warning: timeUp/Down are NAN, Re-initializing");
+    savedProgram.timeUp = 0;
+    savedProgram.timeDown = 0;
+    savedProgram.isUpSet = false;
+    savedProgram.isDownSet = false;
+    EEPROM.put(EEPROM_ADDRESS, savedProgram);
+    successBlink();
+  }
 }
 
 void clearEEPROM(){
