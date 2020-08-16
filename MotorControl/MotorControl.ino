@@ -1,119 +1,112 @@
-/*
-  -----------------------
-   Arduino Power Desktop
-  -----------------------
-  Summary: Controls the direction and speed of the motor.
-  
-  Description: The code waits for a button to be pressed (UP or DOWN), 
-  and accordingly powers the motor in the appropriate direction and with the appropriate speed.
-  On my particular setup (a heavy desktop with 3 monitors), when going UP I need 100% of the power, speed and torque,
-  however, when going down I need a bit less since gravity helps, to keep the speed up and down at a similar rate.
-  You may want to tweak the variables PWM_SPEED_UP and PWM_SPEED_DOWN to adjust it to your desktop load, the allowed values
-  are 0 to 255. 255 being Maximum Speed and 0 being OFF.
-
-  You may use this code and all of the diagrams and documentations completely free. Enjoy!
-  
-  Author: Cesar Moya
-  Date:   July 8th, 2020
-  URL:    https://github.com/cesar-moya/arduino-power-desktop
-*/
-
-#define enA 10
-#define in1 11
-#define in2 12
-
-#define enB 5
-#define in3 6
-#define in4 7
-
+#define in1 5
+#define in2 6
+//#define in3 10
+//#define in4 11
 #define BUTTON_DOWN 2
-#define BUTTON_UP 3
+//#define BUTTON_UP 3
 
 int btnDownPressed = 0;
 int btnUpPressed = 0;
-
 bool goingDown = false;
 bool goingUp = false;
 
-//Using custom values to ensure no more than 24v are delivered to the motors given my desk load.
-//feel free to play with these numbers but make sure to stay within your motor's rated voltage.
-const int PWM_SPEED_UP = 245; //0 - 255, controls motor speed when going UP
-const int PWM_SPEED_DOWN = 220; //0 - 255, controls motor speed when going DOWN
+const int PWM_SPEED_UP = 255; //0 - 255, controls motor speed when going UP
+const int PWM_SPEED_DOWN = 255; //0 - 255, controls motor speed when going DOWN
 const int PWM_ZERO = 0;
 
 void setup() {
   Serial.begin(9600);
   pinMode(LED_BUILTIN, OUTPUT);
-  pinMode(enB, OUTPUT);
-  pinMode(in3, OUTPUT);
-  pinMode(in4, OUTPUT);
+  
+  pinMode(in1, OUTPUT);
+  pinMode(in2, OUTPUT);
   pinMode(BUTTON_DOWN, INPUT);
-  pinMode(BUTTON_UP, INPUT); 
+  //pinMode(BUTTON_UP, INPUT);
+
+  //Motor 1 (out1/out2 - in1/in2)
+  Serial.println("Stop M1, High Side Brake");
+  digitalWrite(in2, LOW);
+  digitalWrite(in1, HIGH);
+
+//  Serial.println("Stop M1, Low Side Brake");
+//  digitalWrite(in2, HIGH);
+//  digitalWrite(in1, LOW);
+
+  Serial.println("Setup Complete");
 }
 
 void loop() {
-  btnDownPressed = digitalRead(BUTTON_DOWN);
-  btnUpPressed = digitalRead(BUTTON_UP);
+  //Serial.println("In Loop...");
+  //See truth table: https://www.pololu.com/file/0J710/A4990-Datasheet.pdf
+  //Motor 1 (out1/out2 - in1/in2)
+//  Serial.println("Clockwise");
+//  digitalWrite(in2, HIGH);
+//  analogWrite(in1, 255); //speed is directly proportional to number. i.e. 0 = stop, 255 = max speed
 
-  if(btnDownPressed == true && btnUpPressed == true){
-    //if both buttons are pressed at the same time, we cancel everything and ignore
-    Serial.println("BOTH BUTTONS PRESSED");
-    stopMoving();
-  }else{
-    if(btnDownPressed){
-      goDown();
-    }else if(goingDown){
-      stopMoving();
-    }else if(btnUpPressed){
-      goUp();
-    }else if(goingUp){
-      stopMoving();
-    }else{
-      //If nothing is pressed, idle and turn off LED
-      stopMoving();
-      Serial.println("Waiting...");
-    }
-  }
+  //Motor 1 (out1/out2 - in1/in2)
+//  Serial.println("Counter-Clockwise");
+//  analogWrite(in2, 255); //speed is now inverse to the number. i.e. 0 = max speed, 255 = stop
+//  digitalWrite(in1, LOW);
+  
+  
+//  btnDownPressed = digitalRead(BUTTON_DOWN);
+  //btnUpPressed = digitalRead(BUTTON_UP);
+
+//  if(btnDownPressed == true && btnUpPressed == true){
+//    //if both buttons are pressed at the same time, we cancel everything and ignore
+//    Serial.println("BOTH BUTTONS PRESSED");
+//    stopMoving();
+//  }else{
+//    if(btnDownPressed){
+//      goDown();
+//    }else if(goingDown){
+//      stopMoving();
+//    }else if(btnUpPressed){
+//      goUp();
+//    }else if(goingUp){
+//      stopMoving();
+//    }else{
+//      //If nothing is pressed, idle and turn off LED
+//      stopMoving();
+//      Serial.println("Waiting...");
+//    }
+//    }
 }
 
-//Send PWM signal to L298N enX pin (sets motor speed)
-void goUp(){
-  Serial.println("UP");
-  goingUp = true;
-  digitalWrite(LED_BUILTIN, HIGH);
-  
-  //Motor A: Turns in (LH) direction
-  analogWrite(enA, PWM_SPEED_UP); 
-  digitalWrite(in1, LOW);
-  digitalWrite(in2, HIGH);
-  
-  //Motor B: Turns in OPPOSITE (HL) direction
-  analogWrite(enB, PWM_SPEED_UP); 
-  digitalWrite(in4, HIGH);
-  digitalWrite(in3, LOW);
-}
+//void goUp(){
+//  Serial.println("UP");
+//  goingUp = true;
+//  digitalWrite(LED_BUILTIN, HIGH);
+//  //Motor A
+//  digitalWrite(in1, LOW);
+//  digitalWrite(in2, PWM_SPEED_UP);
+//  
+//  //Motor B
+//  digitalWrite(in3, LOW);
+//  digitalWrite(in4, PWM_SPEED_UP);
+//}
 
-//Send PWM signal to L298N enX pin (sets motor speed)
 void goDown(){
   Serial.println("DOWN");
   goingDown = true;
   digitalWrite(LED_BUILTIN, HIGH);
   
-  //Motor A: Turns in (HL) Direction
-  analogWrite(enA, PWM_SPEED_DOWN); 
-  digitalWrite(in1, HIGH);
-  digitalWrite(in2, LOW);
+  //Motor A
+  analogWrite(in1, LOW);
+  digitalWrite(in2, PWM_SPEED_DOWN);
   
-  //Motor B: Turns in OPPOSITE (LH) direction
-  analogWrite(enB, PWM_SPEED_DOWN); 
-  digitalWrite(in4, LOW);
-  digitalWrite(in3, HIGH);
+//  //Motor B
+//  analogWrite(in3, PWM_SPEED_DOWN);
+//  digitalWrite(in4, LOW);
 }
 
 void stopMoving(){
   goingDown = false;
   goingUp = false;
-  analogWrite(enA, PWM_ZERO);
-  analogWrite(enB, PWM_ZERO);
+  Serial.println("Stopped Moving");
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, LOW);
+//  digitalWrite(in3, LOW);
+//  digitalWrite(in4, LOW);
   digitalWrite(LED_BUILTIN, LOW);
 }
