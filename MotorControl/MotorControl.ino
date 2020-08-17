@@ -67,10 +67,10 @@
 
 #define BUTTON_DOWN 2 //ATM-4
 #define BUTTON_UP 3   //ATM-5
-#define in1 5
-#define in2 6
-#define in3 10
-#define in4 11
+#define in1 5         //ATM-11
+#define in2 6         //ATM-12
+#define in3 9         //ATM-15
+#define in4 10        //ATM-16
 
 //Struct to store the various necessary variables to persist the autoRaise/autoLower programs to EEPROM
 struct StoredProgram
