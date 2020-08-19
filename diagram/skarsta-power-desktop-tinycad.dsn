@@ -144,12 +144,12 @@ download the executable.-->
 			<COLOR>000000</COLOR>
 			<THICKNESS>1</THICKNESS>
 		</STYLE>
-		<STYLE id='16'>
+		<STYLE id='14'>
 			<STYLE>0</STYLE>
 			<COLOR>FF0000</COLOR>
 			<THICKNESS>1</THICKNESS>
 		</STYLE>
-		<STYLE id='17'>
+		<STYLE id='15'>
 			<STYLE>0</STYLE>
 			<COLOR>00FF00</COLOR>
 			<THICKNESS>1</THICKNESS>
@@ -559,6 +559,116 @@ download the executable.-->
 				</POLYGON>
 			</TinyCAD>
 		</SYMBOLDEF>
+		<SYMBOLDEF id='9'>
+			<NAME type='0'>SWITCH_SPST</NAME>
+			<REF type='1'>SW?</REF>
+			<DESCRIPTION>Single pole normally closed on/off switch</DESCRIPTION>
+			<PPP>1</PPP>
+			<GUID></GUID>
+			<FIELD>
+				<NAME>Package</NAME>
+				<DEFAULT></DEFAULT>
+				<FT>000001</FT>
+				<VALUE></VALUE>
+				<POS>0.00000,0.00000</POS>
+			</FIELD>
+			<FIELD>
+				<NAME>V_Max</NAME>
+				<DEFAULT>..</DEFAULT>
+				<FT>000001</FT>
+				<VALUE></VALUE>
+				<POS>0.00000,0.00000</POS>
+			</FIELD>
+			<FIELD>
+				<NAME>I_Max</NAME>
+				<DEFAULT>..</DEFAULT>
+				<FT>000001</FT>
+				<VALUE></VALUE>
+				<POS>0.00000,0.00000</POS>
+			</FIELD>
+			<FIELD>
+				<NAME>R_Max</NAME>
+				<DEFAULT>..</DEFAULT>
+				<FT>000001</FT>
+				<VALUE></VALUE>
+				<POS>0.00000,0.00000</POS>
+			</FIELD>
+			<FIELD>
+				<NAME>V_Max_AC</NAME>
+				<DEFAULT>..</DEFAULT>
+				<FT>000001</FT>
+				<VALUE></VALUE>
+				<POS>0.00000,0.00000</POS>
+			</FIELD>
+			<FIELD>
+				<NAME>I_Max_AC</NAME>
+				<DEFAULT>..</DEFAULT>
+				<FT>000001</FT>
+				<VALUE></VALUE>
+				<POS>0.00000,0.00000</POS>
+			</FIELD>
+			<FIELD>
+				<NAME>Manufacturer</NAME>
+				<DEFAULT>..</DEFAULT>
+				<FT>000001</FT>
+				<VALUE></VALUE>
+				<POS>0.00000,0.00000</POS>
+			</FIELD>
+			<FIELD>
+				<NAME>Manufacturer Part</NAME>
+				<DEFAULT>..</DEFAULT>
+				<FT>000001</FT>
+				<VALUE></VALUE>
+				<POS>0.00000,0.00000</POS>
+			</FIELD>
+			<FIELD>
+				<NAME>Digi-Key Part</NAME>
+				<DEFAULT>..</DEFAULT>
+				<FT>000001</FT>
+				<VALUE></VALUE>
+				<POS>0.00000,0.00000</POS>
+			</FIELD>
+			<FIELD>
+				<NAME>Newark Part</NAME>
+				<DEFAULT>..</DEFAULT>
+				<FT>000001</FT>
+				<VALUE></VALUE>
+				<POS>0.00000,0.00000</POS>
+			</FIELD>
+			<FIELD>
+				<NAME>Mouser Part</NAME>
+				<DEFAULT>..</DEFAULT>
+				<FT>000001</FT>
+				<VALUE></VALUE>
+				<POS>0.00000,0.00000</POS>
+			</FIELD>
+			<FIELD>
+				<NAME>Cost</NAME>
+				<DEFAULT>..</DEFAULT>
+				<FT>000001</FT>
+				<VALUE></VALUE>
+				<POS>0.00000,0.00000</POS>
+			</FIELD>
+			<REF_POINT power='0' part='0' pos='50.00000,49.00000'/>
+			<TinyCAD>
+				<ELLIPSE a='43.00000,46.00000' b='45.00000,48.00000' style='18' fill='0'/>
+				<POLYGON pos='37.80000,45.00000' style='4' fill='0' polygon='0'>
+					<POINT pos='0.08264,1.68127' arc='0'/>
+					<POINT pos='5.20000,0.00000' arc='0'/>
+				</POLYGON>
+				<PIN pos='32.00000,47.00000' which='0' elec='4' direction='3' part='0' number='1' show='1' length='15' number_pos='0' centre_name='0'></PIN>
+				<PIN pos='49.00000,47.00000' which='0' elec='4' direction='2' part='0' number='2' show='1' length='15' number_pos='0' centre_name='0'></PIN>
+				<ELLIPSE a='36.00000,46.00000' b='38.00000,48.00000' style='18' fill='0'/>
+				<POLYGON pos='35.00000,47.00000' style='4' fill='0' polygon='0'>
+					<POINT pos='1.00000,0.00000' arc='0'/>
+					<POINT pos='0.00000,0.00000' arc='0'/>
+				</POLYGON>
+				<POLYGON pos='45.00000,47.00000' style='4' fill='0' polygon='0'>
+					<POINT pos='0.00000,0.00000' arc='0'/>
+					<POINT pos='1.00000,0.00000' arc='2'/>
+				</POLYGON>
+			</TinyCAD>
+		</SYMBOLDEF>
 		<OPTIONS>
 			<GRID>1</GRID>
 			<UNITS>0</UNITS>
@@ -635,26 +745,22 @@ download the executable.-->
 			<HINT pin='1' net='396'/>
 			<HINT pin='2' net='325'/>
 		</SYMBOL>
-		<POWER pos='54.00000,66.00000' which='0' direction='1'></POWER>
-		<POWER pos='54.00000,76.00000' which='0' direction='0'></POWER>
+		<POWER pos='42.00000,82.00000' which='0' direction='1'></POWER>
+		<POWER pos='42.00000,92.00000' which='0' direction='0'></POWER>
 		<TEXT pos='84.00000,42.00000' direction='3' font='4' color='000000'>LM2596S (Output 5v)</TEXT>
-		<WIRE style='2' a='76.00000,48.00000' b='54.00000,48.00000'/>
-		<WIRE style='2' a='54.00000,62.00000' b='54.00000,66.00000'/>
-		<WIRE style='0' a='54.00000,76.00000' b='54.00000,108.00000'/>
-		<WIRE style='0' a='54.00000,108.00000' b='76.00000,108.00000'/>
-		<WIRE style='0' a='64.00000,56.00000' b='64.00000,76.00000'/>
-		<WIRE style='0' a='64.00000,76.00000' b='54.00000,76.00000'/>
-		<JUNCTION pos='54.00000,76.00000'/>
+		<WIRE style='2' a='60.00000,48.00000' b='42.00000,48.00000'/>
+		<WIRE style='2' a='42.00000,54.00000' b='42.00000,56.00000'/>
+		<WIRE style='0' a='42.00000,92.00000' b='42.00000,108.00000'/>
+		<WIRE style='0' a='42.00000,108.00000' b='76.00000,108.00000'/>
+		<WIRE style='0' a='64.00000,56.00000' b='64.00000,92.00000'/>
+		<WIRE style='0' a='64.00000,92.00000' b='42.00000,92.00000'/>
 		<WIRE style='0' a='64.00000,56.00000' b='76.00000,56.00000'/>
 		<WIRE style='3' a='118.00000,48.00000' b='120.00000,48.00000'/>
 		<WIRE style='3' a='120.00000,48.00000' b='120.00000,70.00000'/>
 		<WIRE style='3' a='120.00000,70.00000' b='68.00000,70.00000'/>
 		<WIRE style='3' a='68.00000,70.00000' b='68.00000,104.00000'/>
 		<WIRE style='3' a='68.00000,104.00000' b='76.00000,104.00000'/>
-		<JUNCTION pos='54.00000,62.00000'/>
-		<WIRE style='2' a='54.00000,62.00000' b='60.00000,62.00000'/>
-		<WIRE style='2' a='54.00000,48.00000' b='54.00000,62.00000'/>
-		<WIRE style='2' a='60.00000,62.00000' b='60.00000,100.00000'/>
+		<WIRE style='2' a='60.00000,48.00000' b='60.00000,100.00000'/>
 		<WIRE style='2' a='60.00000,100.00000' b='76.00000,100.00000'/>
 		<SYMBOL id='5' pos='58.00000,140.00000' part='0' rotate='0' can_scale='0' show_power='0' scale_x='1.00000' scale_y='1.00000'>
 			<FIELD type='0' description='Ref' value='Z?' show='0' pos='1.00000,-3.60000'/>
@@ -696,14 +802,14 @@ download the executable.-->
 			<HINT pin='2' net='212'/>
 		</SYMBOL>
 		<WIRE style='3' a='226.00000,90.00000' b='226.00000,108.00000'/>
-		<WIRE style='17' a='230.00000,94.00000' b='222.00000,94.00000'/>
+		<WIRE style='15' a='230.00000,94.00000' b='222.00000,94.00000'/>
 		<WIRE style='13' a='222.00000,140.00000' b='222.00000,156.00000'/>
-		<WIRE style='17' a='154.00000,114.00000' b='146.00000,114.00000'/>
-		<WIRE style='17' a='146.00000,114.00000' b='146.00000,150.00000'/>
-		<WIRE style='17' a='146.00000,150.00000' b='216.00000,150.00000'/>
-		<WIRE style='17' a='216.00000,150.00000' b='216.00000,120.00000'/>
-		<WIRE style='17' a='216.00000,120.00000' b='222.00000,120.00000'/>
-		<WIRE style='17' a='222.00000,94.00000' b='222.00000,120.00000'/>
+		<WIRE style='15' a='154.00000,114.00000' b='146.00000,114.00000'/>
+		<WIRE style='15' a='146.00000,114.00000' b='146.00000,150.00000'/>
+		<WIRE style='15' a='146.00000,150.00000' b='216.00000,150.00000'/>
+		<WIRE style='15' a='216.00000,150.00000' b='216.00000,120.00000'/>
+		<WIRE style='15' a='216.00000,120.00000' b='222.00000,120.00000'/>
+		<WIRE style='15' a='222.00000,94.00000' b='222.00000,120.00000'/>
 		<JUNCTION pos='180.00000,156.00000'/>
 		<WIRE style='13' a='212.00000,156.00000' b='180.00000,156.00000'/>
 		<JUNCTION pos='222.00000,156.00000'/>
@@ -718,15 +824,15 @@ download the executable.-->
 			<HINT pin='1' net='213'/>
 			<HINT pin='2' net='214'/>
 		</SYMBOL>
-		<WIRE style='16' a='230.00000,112.00000' b='230.00000,116.00000'/>
-		<WIRE style='16' a='230.00000,116.00000' b='240.00000,116.00000'/>
-		<WIRE style='16' a='240.00000,116.00000' b='240.00000,136.00000'/>
+		<WIRE style='14' a='230.00000,112.00000' b='230.00000,116.00000'/>
+		<WIRE style='14' a='230.00000,116.00000' b='240.00000,116.00000'/>
+		<WIRE style='14' a='240.00000,116.00000' b='240.00000,136.00000'/>
 		<JUNCTION pos='240.00000,136.00000'/>
-		<WIRE style='16' a='240.00000,136.00000' b='232.00000,136.00000'/>
-		<WIRE style='16' a='232.00000,136.00000' b='232.00000,146.00000'/>
-		<WIRE style='16' a='232.00000,146.00000' b='150.00000,146.00000'/>
-		<WIRE style='16' a='150.00000,146.00000' b='150.00000,120.00000'/>
-		<WIRE style='16' a='150.00000,120.00000' b='154.00000,120.00000'/>
+		<WIRE style='14' a='240.00000,136.00000' b='232.00000,136.00000'/>
+		<WIRE style='14' a='232.00000,136.00000' b='232.00000,146.00000'/>
+		<WIRE style='14' a='232.00000,146.00000' b='150.00000,146.00000'/>
+		<WIRE style='14' a='150.00000,146.00000' b='150.00000,120.00000'/>
+		<WIRE style='14' a='150.00000,120.00000' b='154.00000,120.00000'/>
 		<TEXT pos='228.00000,184.00000' direction='3' font='3' color='000000'>Hacking a SKARSTA Desk to motorize it</TEXT>
 		<TEXT pos='228.00000,194.00000' direction='3' font='3' color='000000'>Cesar Moya</TEXT>
 		<NOCONNECT pos='248.00000,90.00000'/>
@@ -734,7 +840,7 @@ download the executable.-->
 		<NOCONNECT pos='248.00000,108.00000'/>
 		<NOCONNECT pos='248.00000,112.00000'/>
 		<JUNCTION pos='118.00000,48.00000'/>
-		<TEXT pos='40.00000,72.00000' direction='3' font='3' color='000000'>Power (29V DC)</TEXT>
+		<TEXT pos='40.00000,98.00000' direction='0' font='3' color='000000'>Power (29V DC)</TEXT>
 		<TEXT pos='92.00000,92.00000' direction='3' font='4' color='000000'>L298N</TEXT>
 		<TEXT pos='224.00000,128.00000' direction='3' font='4' color='000000'>10k OHM</TEXT>
 		<TEXT pos='244.00000,148.00000' direction='3' font='4' color='000000'>10k OHM</TEXT>
@@ -797,5 +903,30 @@ download the executable.-->
 		<JUNCTION pos='212.00000,156.00000'/>
 		<WIRE style='13' a='222.00000,156.00000' b='212.00000,156.00000'/>
 		<TEXT pos='216.00000,48.00000' direction='3' font='4' color='000000'>220 OHM</TEXT>
+		<SYMBOL id='9' pos='44.00000,72.00000' part='0' rotate='3' can_scale='0' show_power='0' scale_x='1.00000' scale_y='1.00000'>
+			<FIELD type='1' description='Ref' value='SW?' show='0' pos='-4.00000,2.00000'/>
+			<FIELD type='0' description='Name' value='' show='1' pos='-4.00000,-18.00000'/>
+			<FIELD type='1' description='Package' value='' show='0' pos='-4.00000,4.40000'/>
+			<FIELD type='1' description='V_Max' value='..' show='0' pos='-4.00000,6.80000'/>
+			<FIELD type='1' description='I_Max' value='..' show='0' pos='-4.00000,9.20000'/>
+			<FIELD type='1' description='R_Max' value='..' show='0' pos='-4.00000,11.60000'/>
+			<FIELD type='1' description='V_Max_AC' value='..' show='0' pos='-4.00000,14.00000'/>
+			<FIELD type='1' description='I_Max_AC' value='..' show='0' pos='-4.00000,16.40000'/>
+			<FIELD type='1' description='Manufacturer' value='..' show='0' pos='-4.00000,18.80000'/>
+			<FIELD type='1' description='Manufacturer Part' value='..' show='0' pos='-4.00000,21.20000'/>
+			<FIELD type='1' description='Digi-Key Part' value='..' show='0' pos='-4.00000,23.60000'/>
+			<FIELD type='1' description='Newark Part' value='..' show='0' pos='-4.00000,26.00000'/>
+			<FIELD type='1' description='Mouser Part' value='..' show='0' pos='-4.00000,28.40000'/>
+			<FIELD type='1' description='Cost' value='..' show='0' pos='-4.00000,30.80000'/>
+		</SYMBOL>
+		<JUNCTION pos='42.00000,92.00000'/>
+		<JUNCTION pos='60.00000,48.00000'/>
+		<WIRE style='2' a='76.00000,48.00000' b='60.00000,48.00000'/>
+		<JUNCTION pos='42.00000,54.00000'/>
+		<WIRE style='2' a='42.00000,48.00000' b='42.00000,54.00000'/>
+		<WIRE style='2' a='42.00000,71.00000' b='42.00000,82.00000'/>
+		<JUNCTION pos='42.00000,71.00000'/>
+		<WIRE style='2' a='42.00000,70.00000' b='42.00000,71.00000'/>
+		<TEXT pos='40.00000,70.00000' direction='0' font='3' color='000000'>On/Off Switch</TEXT>
 	</TinyCAD>
 </TinyCADSheets>
