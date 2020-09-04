@@ -67,13 +67,12 @@
 
 #define BUTTON_DOWN 2 //ATM-4
 #define BUTTON_UP 3   //ATM-5
-#define enA 6         //ATM-12
-#define in1 7         //ATM-13
-#define in2 8         //ATM-14
-#define LED_SYS 9     //ATM-15
-#define enB 10        //ATM-16
-#define in3 11        //ATM-17
-#define in4 12        //ATM-18
+#define pwmA 6         //ATM-12
+#define inA1 7         //ATM-13
+#define inA2 8         //ATM-14
+#define pwmB 10        //ATM-16
+#define inB1 11        //ATM-17
+#define inB2 12        //ATM-18
 
 //Struct to store the various necessary variables to persist the autoRaise/autoLower programs to EEPROM
 struct StoredProgram
@@ -114,21 +113,20 @@ bool autoLowerActivated = false;
 
 //Using custom values to ensure no more than 24v are delivered to the motors given my desk load.
 //feel free to play with these numbers but make sure to stay within your motor's rated voltage.
-const int PWM_SPEED_UP = 245; //0 - 255, controls motor speed when going UP
-const int PWM_SPEED_DOWN = 220; //0 - 255, controls motor speed when going DOWN
+const int PWM_SPEED_UP = 250; //0 - 255, controls motor speed when going UP
+const int PWM_SPEED_DOWN = 230; //0 - 255, controls motor speed when going DOWN
 
 void setup() {
   Serial.begin(9600);
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(BUTTON_DOWN, INPUT);
   pinMode(BUTTON_UP, INPUT);
-  pinMode(enA, OUTPUT);
-  pinMode(in1, OUTPUT);
-  pinMode(in2, OUTPUT);
-  pinMode(LED_SYS, OUTPUT);
-  pinMode(enB, OUTPUT);
-  pinMode(in3, OUTPUT);
-  pinMode(in4, OUTPUT);
+  pinMode(pwmA, OUTPUT);
+  pinMode(inA1, OUTPUT);
+  pinMode(inA2, OUTPUT);
+  pinMode(pwmB, OUTPUT);
+  pinMode(inB1, OUTPUT);
+  pinMode(inB2, OUTPUT);
   readFromEEPROM();
   validateEEPROM();
 }
@@ -400,7 +398,7 @@ bool handleProgramMode(){
       } //end of while / program mode
 
       Serial.println("PROGRAM MODE | Exited");
-      digitalWrite(LED_SYS, LOW);
+      digitalWrite(LED_BUILTIN, LOW);
     }
 
     return true;
@@ -463,7 +461,7 @@ void autoRaiseDesk(long alreadyElapsed)
     Serial.println("Error: Up Program not set");
     warningBlink();
   }
-  digitalWrite(LED_SYS, LOW);
+  digitalWrite(LED_BUILTIN, LOW);
 }
 
 // Tries to lower the desk automatically using the previously programmed values
@@ -515,7 +513,7 @@ void autoLowerDesk(long alreadyElapsed)
     Serial.println("Warning: Can't lower desk on current conditions");
     warningBlink();
   }
-  digitalWrite(LED_SYS, LOW);
+  digitalWrite(LED_BUILTIN, LOW);
 }
 
 //Send PWM signal to L298N enX pin (sets motor speed)
@@ -523,17 +521,16 @@ void goUp()
 {
   Serial.print("UP:"); Serial.println(PWM_SPEED_UP);
   digitalWrite(LED_BUILTIN, HIGH);
-  digitalWrite(LED_SYS, HIGH);
 
-  //Motor A: Turns in (LH) direction
-  analogWrite(enA, PWM_SPEED_UP);
-  digitalWrite(in1, LOW);
-  digitalWrite(in2, HIGH);
+  //Motor A (BACK): Turns backward
+  analogWrite(pwmA, PWM_SPEED_UP);
+  digitalWrite(inA1, LOW);
+  digitalWrite(inA2, HIGH);
 
-  //Motor B: Turns in OPPOSITE (HL) direction
-  analogWrite(enB, PWM_SPEED_UP);
-  digitalWrite(in4, HIGH);
-  digitalWrite(in3, LOW);
+  //Motor B (FRONT): Turns forward
+  analogWrite(pwmB, PWM_SPEED_UP);
+  digitalWrite(inB1, HIGH);
+  digitalWrite(inB2, LOW);
 }
 
 //Send PWM signal to L298N enX pin (sets motor speed)
@@ -541,25 +538,23 @@ void goDown()
 {
   Serial.print("DOWN:");Serial.println(PWM_SPEED_DOWN);
   digitalWrite(LED_BUILTIN, HIGH);
-  digitalWrite(LED_SYS, HIGH);
 
-  //Motor A: Turns in (HL) Direction
-  analogWrite(enA, PWM_SPEED_DOWN);
-  digitalWrite(in1, HIGH);
-  digitalWrite(in2, LOW);
+  //Motor A (BACK):  Turns backward
+  analogWrite(pwmA, PWM_SPEED_DOWN);
+  digitalWrite(inA1, HIGH);
+  digitalWrite(inA2, LOW);
 
-  //Motor B: Turns in OPPOSITE (LH) direction
-  analogWrite(enB, PWM_SPEED_DOWN);
-  digitalWrite(in4, LOW);
-  digitalWrite(in3, HIGH);
+  //Motor B (FRONT): Turns forward
+  analogWrite(pwmB, PWM_SPEED_DOWN);
+  digitalWrite(inB1, LOW);
+  digitalWrite(inB2, HIGH);
 }
 
 void stopMoving()
 {
-  analogWrite(enA, 0);
-  analogWrite(enB, 0);
+  analogWrite(pwmA, 0);
+  analogWrite(pwmB, 0);
   digitalWrite(LED_BUILTIN, LOW);
-  digitalWrite(LED_SYS, LOW);
   Serial.println("Idle...");
 }
 
@@ -632,9 +627,9 @@ void clearEEPROM(){
 void programBlink(long elapsed, long blinkFreq){
   long blinkNo = elapsed / blinkFreq;
   if (blinkNo % 2 == 0)
-    digitalWrite(LED_SYS, HIGH);
+    digitalWrite(LED_BUILTIN, HIGH);
   else
-    digitalWrite(LED_SYS, LOW);
+    digitalWrite(LED_BUILTIN, LOW);
 }
 
 //This function debounces the initial button reads to prevent flickering
@@ -651,24 +646,24 @@ bool debounceRead(int buttonPin, bool state)
 
 void successBlink()
 {
-  digitalWrite(LED_SYS, LOW);
+  digitalWrite(LED_BUILTIN, LOW);
   for (int i = 0; i < 2; i++)
   {
-    digitalWrite(LED_SYS, HIGH);
+    digitalWrite(LED_BUILTIN, HIGH);
     delay(500);
-    digitalWrite(LED_SYS, LOW);
+    digitalWrite(LED_BUILTIN, LOW);
     delay(500);
   }
 }
 
 void warningBlink()
 {
-  digitalWrite(LED_SYS, LOW);
+  digitalWrite(LED_BUILTIN, LOW);
   for (int i = 1; i <= 9; i++)
   {
-    digitalWrite(LED_SYS, HIGH);
+    digitalWrite(LED_BUILTIN, HIGH);
     delay(50);
-    digitalWrite(LED_SYS, LOW);
+    digitalWrite(LED_BUILTIN, LOW);
     delay(50);
     if (i > 0 && i % 3 == 0)
     {
@@ -679,12 +674,12 @@ void warningBlink()
 
 void thinkingBlink()
 {
-  digitalWrite(LED_SYS, LOW);
+  digitalWrite(LED_BUILTIN, LOW);
   for (int i = 0; i < 20; i++)
   {
-    digitalWrite(LED_SYS, HIGH);
+    digitalWrite(LED_BUILTIN, HIGH);
     delay(30);
-    digitalWrite(LED_SYS, LOW);
+    digitalWrite(LED_BUILTIN, LOW);
     delay(30);
   }
 }
