@@ -527,13 +527,13 @@ void goUp(bool inProgramMode)
   
   //Motor A (BACK): Turns backward
   analogWrite(pwmA, PWM_SPEED_UP);
-  digitalWrite(inA1, LOW);
-  digitalWrite(inA2, HIGH);
+  digitalWrite(inA1, HIGH);
+  digitalWrite(inA2, LOW);
 
   //Motor B (FRONT): Turns forward
   analogWrite(pwmB, PWM_SPEED_UP);
-  digitalWrite(inB1, HIGH);
-  digitalWrite(inB2, LOW);
+  digitalWrite(inB1, LOW);
+  digitalWrite(inB2, HIGH);
 }
 
 //Send PWM signal to L298N enX pin (sets motor speed)
@@ -546,13 +546,13 @@ void goDown(bool inProgramMode)
 
   //Motor A (BACK):  Turns backward
   analogWrite(pwmA, PWM_SPEED_DOWN);
-  digitalWrite(inA1, HIGH);
-  digitalWrite(inA2, LOW);
+  digitalWrite(inA1, LOW);
+  digitalWrite(inA2, HIGH);
 
   //Motor B (FRONT): Turns forward
   analogWrite(pwmB, PWM_SPEED_DOWN);
-  digitalWrite(inB1, LOW);
-  digitalWrite(inB2, HIGH);
+  digitalWrite(inB1, HIGH);
+  digitalWrite(inB2, LOW);
 }
 
 void stopMoving()
