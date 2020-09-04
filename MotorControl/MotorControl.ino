@@ -205,7 +205,7 @@ void handleButtonUp(){
         }
         else
         {
-          goUp();
+          goUp(false);
         }
       }
 
@@ -273,7 +273,7 @@ void handleButtonDown()
         }
         else
         {
-          goDown();
+          goDown(false);
         }
       }
 
@@ -358,7 +358,7 @@ bool handleProgramMode(){
           {
             Serial.print("PROGRAM MODE | Recording | elapsed: ");
             Serial.println(millis() - recStart);
-            goUp();
+            goUp(false);
           }
         }
         
@@ -391,7 +391,7 @@ bool handleProgramMode(){
           {
             Serial.print("PROGRAM MODE | Recording Down| elapsed: ");
             Serial.println(millis() - recStart);
-            goDown();
+            goDown(false);
           }
         }
 
@@ -431,7 +431,7 @@ void autoRaiseDesk(long alreadyElapsed)
 
     while(elapsed < timeToRaise){
       programBlink(elapsed, 50);
-      goUp();
+      goUp(true);
 
       //Cancel if any button is pressed during autoRaise
       if(!btnUpState && debounceRead(BUTTON_UP, btnUpState)){
@@ -482,7 +482,7 @@ void autoLowerDesk(long alreadyElapsed)
     while (elapsed < timeToLower)
     {
       programBlink(elapsed, 50);
-      goDown();
+      goDown(true);
 
       //Cancel if any button is pressed during auto-lower
       if (!btnUpState && debounceRead(BUTTON_UP, btnUpState)){
@@ -517,11 +517,14 @@ void autoLowerDesk(long alreadyElapsed)
 }
 
 //Send PWM signal to L298N enX pin (sets motor speed)
-void goUp()
+void goUp(bool inProgramMode)
 {
   Serial.print("UP:"); Serial.println(PWM_SPEED_UP);
-  digitalWrite(LED_BUILTIN, HIGH);
 
+  if(!inProgramMode){
+    digitalWrite(LED_BUILTIN, HIGH);
+  }
+  
   //Motor A (BACK): Turns backward
   analogWrite(pwmA, PWM_SPEED_UP);
   digitalWrite(inA1, LOW);
@@ -534,10 +537,12 @@ void goUp()
 }
 
 //Send PWM signal to L298N enX pin (sets motor speed)
-void goDown()
+void goDown(bool inProgramMode)
 {
   Serial.print("DOWN:");Serial.println(PWM_SPEED_DOWN);
-  digitalWrite(LED_BUILTIN, HIGH);
+  if(!inProgramMode){
+    digitalWrite(LED_BUILTIN, HIGH);
+  }
 
   //Motor A (BACK):  Turns backward
   analogWrite(pwmA, PWM_SPEED_DOWN);
