@@ -64,6 +64,9 @@
   URL:    https://github.com/cesar-moya/arduino-power-desktop
 */
 #include <EEPROM.h>
+#include <NewPing.h>
+#include <Arduino.h>
+#include <TM1637Display.h>
 
 #define BUTTON_DOWN 2 //ATM-4
 #define BUTTON_UP 3   //ATM-5
@@ -74,6 +77,14 @@
 #define enB 10        //ATM-16
 #define in3 11        //ATM-17
 #define in4 12        //ATM-18
+#define CLK 14 // 7 Segment
+#define DIO 15 // 7 Segment
+#define ECHO_PIN     16  // Arduino pin tied to echo pin on the ultrasonic sensor.
+#define TRIGGER_PIN  17  // Arduino pin tied to trigger pin on the ultrasonic sensor.
+#define MAX_DISTANCE 200 // Maximum distance we want to ping for (in centimeters). Maximum sensor distance is rated at 400-500cm.
+
+NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE); // NewPing setup of pins and maximum distance.
+TM1637Display display(CLK, DIO);
 
 //Struct to store the various necessary variables to persist the autoRaise/autoLower programs to EEPROM
 struct StoredProgram
@@ -117,6 +128,9 @@ bool autoLowerActivated = false;
 const int PWM_SPEED_UP = 245; //0 - 255, controls motor speed when going UP
 const int PWM_SPEED_DOWN = 220; //0 - 255, controls motor speed when going DOWN
 
+// for sensor
+int oldDistance;
+
 void setup() {
   Serial.begin(9600);
   pinMode(LED_BUILTIN, OUTPUT);
@@ -146,6 +160,31 @@ void loop() {
   handleButtonUp();
   handleButtonDown();
 }
+
+void checkHeight() {    // Get Sensor Reading and display on 7-Segment
+  display.setBrightness(1);
+  uint8_t data[] = { 0x0, 0x0, 0x0, 0x0 };
+  double microsecondsToMillimeters(long microseconds);
+  int microseconds = sonar.ping();
+  int distance = microseconds / 5.81;
+  if  (distance != oldDistance) { //avoid flickering of 7-Ssegment as it now wont refresh if the value hasn't changed
+    display.setSegments(data);
+    display.showNumberDec(distance, false);
+    oldDistance = distance;
+  };
+  if (microseconds == 0) { //display "Err1" if the sonar sensor has an error"
+    const uint8_t Err [] = {
+      SEG_A | SEG_D | SEG_E | SEG_F | SEG_G, // E
+      SEG_E | SEG_G, // r
+      SEG_E | SEG_G, // r    
+      SEG_B | SEG_C, // 1
+    };
+    display.setSegments (Err,4);
+    Serial.println("Error 1 - Sonar-Sensor-Error");
+    };
+  delay(100); //polling frequency of the sonar sensor
+}
+
 
 /****************************************
   MAIN CONTROL FUNCTIONS
@@ -179,6 +218,7 @@ void handleButtonUp(){
     Serial.print("BUTTON UP | Pressed [");
     Serial.print(btnUpClicks);
     Serial.println("] times");
+    
     BUTTON_UP_STATE = HIGH;
     if (btnUpClicks == 0)
     {
@@ -195,7 +235,8 @@ void handleButtonUp(){
       Serial.print(elapsed);
       Serial.print(" | Clicks: ");
       Serial.println(btnUpClicks);
-      
+      checkHeight();
+
       //small delay before starting to work for smoothness
       if (elapsed >= BUTTON_WAIT_TIME)
       {
@@ -235,6 +276,9 @@ void handleButtonUp(){
   {
     Serial.println("BUTTON UP | Released");
     BUTTON_UP_STATE = LOW;
+    checkHeight();
+    delay(5000);
+    display.clear();
   }
 }
 
@@ -264,6 +308,7 @@ void handleButtonDown()
       Serial.print(elapsed);
       Serial.print(" | Clicks: ");
       Serial.println(btnDownClicks);
+      checkHeight();
       //small delay before starting to work for smoothness
       if (elapsed >= BUTTON_WAIT_TIME) 
       {
@@ -303,6 +348,9 @@ void handleButtonDown()
   {
     Serial.println("BUTTON DOWN | Released");
     BUTTON_DOWN_STATE = LOW;
+    checkHeight();
+    delay(5000);
+    display.clear();
   }
 }
 
